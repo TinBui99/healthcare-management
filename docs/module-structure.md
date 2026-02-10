@@ -167,9 +167,9 @@ graph LR
     style G fill:#ffd93d
     style H fill:#ffd93d
 ```
-```mermaid
-## 🎯 Component Hierarchy
 
+## 🎯 Component Hierarchy
+```mermaid
 
 graph TD
     A[App.vue] --> B[Router View]
