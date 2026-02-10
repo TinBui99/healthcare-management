@@ -126,11 +126,11 @@ graph LR
     
     subgraph "UI Dependencies"
         E[Lucide Vue Next]
-        F[@vueuse/core]
+        F["@vueuse/core"]
     end
     
     subgraph "Development Dependencies"
-        G[@vitejs/plugin-vue]
+        G["@vitejs/plugin-vue"]
         H[Sass]
     end
     
