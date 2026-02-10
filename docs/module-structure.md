@@ -170,7 +170,6 @@ graph LR
 
 ## 🎯 Component Hierarchy
 ```mermaid
-
 graph TD
     A[App.vue] --> B[Router View]
     B --> C[Dashboard.vue]
