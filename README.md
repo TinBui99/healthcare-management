@@ -240,15 +240,12 @@ Chúng tôi chào đón mọi đóng góp từ cộng đồng! Để đóng góp
 - Cập nhật documentation
 - Sử dụng descriptive commit messages
 
-## 📄 License
-
-Dự án này được cấp phép theo MIT License - xem file [LICENSE](LICENSE) để biết chi tiết.
 
 ## 📞 Liên hệ
 
-- **Project Maintainer**: [Your Name]
-- **Email**: [your.email@example.com]
-- **GitHub**: [https://github.com/your-username]
+- **Project Maintainer**: TinBui99
+- **Email**: trongtin30899@gmail.com
+- **GitHub**: (https://github.com/TinBui99)
 
 ## 🙏 Cảm ơn
 
