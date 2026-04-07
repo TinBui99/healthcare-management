@@ -48,7 +48,7 @@
                     {{ patient.name }}
                   </div>
                 </td>
-                <td>{{ formatDate(patient.dateOfBirth) }}</td>
+                <td>{{ formatDate(patient.date_of_birth) }}</td>
                 <td>{{ patient.gender === 'male' ? 'Nam' : 'Nữ' }}</td>
                 <td>{{ patient.phone }}</td>
                 <td>{{ patient.email }}</td>
@@ -342,13 +342,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import { Plus, Search, User, X, Eye, Edit } from 'lucide-vue-next'
-import { patientsData } from '@/data'
+import { PatientService } from '@/services/patientService'
 
 const searchQuery = ref('')
-const patients = ref(patientsData)
+const patients = ref([])
+const loading = ref(false)
 const showAddPatientModal = ref(false)
 const showViewPatientModal = ref(false)
 const showEditPatientModal = ref(false)
@@ -373,8 +374,8 @@ const filteredPatients = computed(() => {
   return patients.value.filter(patient =>
     patient.name.toLowerCase().includes(query) ||
     patient.code.toLowerCase().includes(query) ||
-    patient.phone.includes(query) ||
-    patient.email.toLowerCase().includes(query)
+    patient.phone?.includes(query) ||
+    patient.email?.toLowerCase().includes(query)
   )
 })
 
@@ -395,31 +396,59 @@ const resetNewPatient = () => {
   }
 }
 
-const submitNewPatient = () => {
-  // Generate patient code
-  const patientCode = 'BN' + String(patients.value.length + 1).padStart(4, '0')
-  
-  // Create new patient object
-  const patient = {
-    id: patients.value.length + 1,
-    code: patientCode,
-    name: newPatient.value.name,
-    dateOfBirth: newPatient.value.dateOfBirth,
-    gender: newPatient.value.gender,
-    phone: newPatient.value.phone,
-    email: newPatient.value.email || '',
-    address: newPatient.value.address || '',
-    status: 'active'
+// Load patients from database
+const loadPatients = async () => {
+  try {
+    loading.value = true
+    patients.value = await PatientService.getPatients()
+  } catch (error) {
+    console.error('Error loading patients:', error)
+    // You could show a toast notification here
+  } finally {
+    loading.value = false
   }
-  
-  // Add to patients list
-  patients.value.unshift(patient)
-  
-  // Close modal and reset form
-  closeAddPatientModal()
-  
-  // Show success message (you could add a toast notification here)
-  console.log('Bệnh nhân mới đã được thêm:', patient)
+}
+
+onMounted(() => {
+  loadPatients()
+})
+
+const submitNewPatient = async () => {
+  try {
+    loading.value = true
+    
+    // Generate patient code
+    const patientCode = await PatientService.generatePatientCode()
+    
+    // Create new patient object
+    const patientData = {
+      code: patientCode,
+      name: newPatient.value.name,
+      date_of_birth: newPatient.value.dateOfBirth,
+      gender: newPatient.value.gender,
+      phone: newPatient.value.phone,
+      email: newPatient.value.email || null,
+      address: newPatient.value.address || null,
+      status: 'active'
+    }
+    
+    // Add to database
+    const newPatientData = await PatientService.createPatient(patientData)
+    
+    // Add to local list
+    patients.value.unshift(newPatientData)
+    
+    // Close modal and reset form
+    closeAddPatientModal()
+    
+    // Show success message
+    console.log('Bệnh nhân mới đã được thêm:', newPatientData)
+  } catch (error) {
+    console.error('Error adding patient:', error)
+    // You could show an error toast here
+  } finally {
+    loading.value = false
+  }
 }
 
 const viewPatient = (patient) => {
@@ -443,19 +472,40 @@ const closeEditPatientModal = () => {
   editingPatient.value = {}
 }
 
-const updatePatient = () => {
-  // Find patient index
-  const index = patients.value.findIndex(p => p.id === editingPatient.value.id)
-  
-  if (index !== -1) {
-    // Update patient data
-    patients.value[index] = { ...editingPatient.value }
+const updatePatient = async () => {
+  try {
+    loading.value = true
+    
+    // Create update object
+    const patientData = {
+      name: editingPatient.value.name,
+      date_of_birth: editingPatient.value.dateOfBirth,
+      gender: editingPatient.value.gender,
+      phone: editingPatient.value.phone,
+      email: editingPatient.value.email || null,
+      address: editingPatient.value.address || null,
+      status: editingPatient.value.status
+    }
+    
+    // Update in database
+    const updatedPatient = await PatientService.updatePatient(editingPatient.value.id, patientData)
+    
+    // Find patient index and update local list
+    const index = patients.value.findIndex(p => p.id === editingPatient.value.id)
+    if (index !== -1) {
+      patients.value[index] = updatedPatient
+    }
     
     // Close modal and reset
     closeEditPatientModal()
     
     // Show success message
-    console.log('Bệnh nhân đã được cập nhật:', editingPatient.value)
+    console.log('Bệnh nhân đã được cập nhật:', updatedPatient)
+  } catch (error) {
+    console.error('Error updating patient:', error)
+    // You could show an error toast here
+  } finally {
+    loading.value = false
   }
 }
 
