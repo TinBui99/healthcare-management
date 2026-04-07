@@ -82,8 +82,8 @@
               <User />
             </div>
             <div class="user-info">
-              <div class="user-name">Dr. Nguyễn Văn A</div>
-              <div class="user-role">Quản trị viên</div>
+              <div class="user-name">{{ authStore.user?.name || 'Administrator' }}</div>
+              <div class="user-role">{{ authStore.user?.role || 'Quản trị viên' }}</div>
             </div>
           </div>
           
@@ -94,9 +94,9 @@
                 <User />
               </div>
               <div class="popup-info">
-                <div class="popup-name">Dr. Nguyễn Văn A</div>
-                <div class="popup-email">nguyenvana@healthcare.com</div>
-                <div class="popup-role">Quản trị viên</div>
+                <div class="popup-name">{{ authStore.user?.name || 'Administrator' }}</div>
+                <div class="popup-email">{{ authStore.user?.email || 'admin@healthcare.com' }}</div>
+                <div class="popup-role">{{ authStore.user?.role || 'Quản trị viên' }}</div>
               </div>
             </div>
             <div class="popup-menu">
@@ -108,10 +108,10 @@
                 <Settings />
                 <span>Cài đặt</span>
               </a>
-              <a href="#" class="popup-menu-item">
+              <button @click="handleLogout" class="popup-menu-item">
                 <LogOut />
                 <span>Đăng xuất</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -127,7 +127,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import {
   Heart,
   Menu,
@@ -146,6 +147,8 @@ import {
 } from 'lucide-vue-next'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 const sidebarCollapsed = ref(false)
 const showUserMenu = ref(false)
 const showNotifications = ref(false)
@@ -213,6 +216,12 @@ const getNotificationIcon = (iconName) => {
     AlertCircle
   }
   return icons[iconName] || Bell
+}
+
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/login')
+  showUserMenu.value = false
 }
 
 // Close menus when clicking outside
@@ -545,6 +554,11 @@ onMounted(() => {
   border-radius: calc(var(--radius) - 2px);
   transition: background-color 0.2s;
   font-size: 0.875rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
 }
 
 .popup-menu-item:hover {
