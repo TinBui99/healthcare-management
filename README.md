@@ -198,10 +198,11 @@ healthcare-management/
 - [ ] Xuất báo cáo
 
 ### 🔐 Authentication
-- [ ] Đăng nhập/Đăng xuất
-- [ ] Quản lý người dùng
-- [ ] Phân quyền
-- [ ] Bảo mật
+- [x] Đăng nhập/Đăng xuất
+- [x] Quản lý người dùng
+- [x] Phân quyền route
+- [x] Bảo mật session
+- [x] Trang 404/403 error handling
 
 ## 🎨 Giao diện
 
@@ -240,6 +241,53 @@ Chúng tôi chào đón mọi đóng góp từ cộng đồng! Để đóng góp
 - Cập nhật documentation
 - Sử dụng descriptive commit messages
 
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. **Connect Repository**
+   - Connect your GitHub repository to Vercel
+   - Vercel will auto-detect Vite framework
+
+2. **Build Configuration**
+   - Build settings are configured in `vercel.json`
+   - Auto-build on every push to main branch
+
+3. **Environment Variables** (if needed)
+   ```env
+   VITE_API_BASE_URL=https://your-api-url.com
+   ```
+
+### Manual Deployment
+
+1. **Build the project**
+   ```bash
+   npm run build
+   ```
+
+2. **Deploy to hosting**
+   - Upload the `dist` folder to your hosting provider
+   - Configure server to handle SPA routing
+
+### Server Configuration
+
+For production servers, configure routing fallback:
+
+**Nginx Example:**
+```nginx
+location / {
+  try_files $uri $uri/ /index.html;
+}
+```
+
+**Apache Example (.htaccess):**
+```apache
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+```
 
 ## 📞 Liên hệ
 
