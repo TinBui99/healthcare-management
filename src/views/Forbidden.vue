@@ -5,18 +5,18 @@
         <Shield :size="80" />
       </div>
       <h1 class="error-title">403</h1>
-      <h2 class="error-subtitle">Truy cap bi tu choi</h2>
+      <h2 class="error-subtitle">Truy cập bị từ chối</h2>
       <p class="error-message">
-        Ban không co quyen truy cap trang này. Vui lòng dang nhap voi tai khoan co quyen thich hop.
+        Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản có quyền thích hợp.
       </p>
       <div class="error-actions">
         <button @click="goBack" class="btn btn-secondary">
           <ArrowLeft :size="16" />
-          Quay lai
+          Quay lại
         </button>
         <router-link to="/login" class="btn btn-primary">
           <LogIn :size="16" />
-          Dang nhap
+          Đăng nhập
         </router-link>
       </div>
     </div>
