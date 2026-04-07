@@ -10,6 +10,19 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000
+    port: 3000,
+    historyApiFallback: {
+      index: '/index.html'
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router', 'pinia'],
+          icons: ['lucide-vue-next']
+        }
+      }
+    }
   }
 })
