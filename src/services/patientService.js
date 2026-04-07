@@ -8,15 +8,15 @@ export class PatientService {
     try {
       // Test connection first
       console.log('📡 Testing Supabase connection...')
-      console.log('URL:', import.meta.env.VITE_SUPABASE_URL)
-      console.log('Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY)
+      // console.log('URL:', import.meta.env.VITE_SUPABASE_URL)
+      // console.log('Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY)
       
       const { data, error } = await supabase
         .from('patients')
         .select('*')
         .order('created_at', { ascending: false })
 
-      console.log('📊 Supabase response:', { data, error })
+      // console.log('📊 Supabase response:', { data, error })
       
       if (error) {
         console.error('❌ Supabase error details:', {
