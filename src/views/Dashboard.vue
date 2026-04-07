@@ -162,32 +162,44 @@
           </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Thao tác nhanh</h3>
-          </div>
-          <div class="card-body">
-            <div class="quick-actions">
-              <button class="quick-action-btn">
-                <Plus />
-                <span>Thêm bệnh nhân mới</span>
-              </button>
-              <button class="quick-action-btn">
-                <Calendar />
-                <span>Đặt lịch hẹn</span>
-              </button>
-              <button class="quick-action-btn">
-                <FileText />
-                <span>Tạo hồ sơ bệnh án</span>
-              </button>
-              <button class="quick-action-btn" @click="showPaymentModal = true">
-                <CreditCard />
-                <span>Thanh toán</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <!-- Quick Actions card removed - now using fixed FAB -->
+<!--        <div class="card">-->
+<!--          <div class="card-header">-->
+<!--            <h3 class="card-title">Thao tác nhanh</h3>-->
+<!--          </div>-->
+<!--          <div class="card-body">-->
+<!--            <div class="quick-actions-fab">-->
+<!--              <div class="fab-container">-->
+<!--                <button -->
+<!--                  class="fab-button" -->
+<!--                  @click="toggleFabMenu"-->
+<!--                  :class="{ 'active': showFabMenu }"-->
+<!--                >-->
+<!--                  <Plus />-->
+<!--                </button>-->
+<!--                -->
+<!--                <div class="fab-menu" :class="{ 'active': showFabMenu }">-->
+<!--                  <button class="fab-option fab-option-1" @click="addPatient">-->
+<!--                    <Users />-->
+<!--                    <span>Thêm bệnh nhân</span>-->
+<!--                  </button>-->
+<!--                  <button class="fab-option fab-option-2" @click="addAppointment">-->
+<!--                    <Calendar />-->
+<!--                    <span>Đặt lịch hẹn</span>-->
+<!--                  </button>-->
+<!--                  <button class="fab-option fab-option-3" @click="addMedicalRecord">-->
+<!--                    <FileText />-->
+<!--                    <span>Tạo hồ sơ bệnh án</span>-->
+<!--                  </button>-->
+<!--                  <button class="fab-option fab-option-4" @click="showPaymentModal = true">-->
+<!--                    <CreditCard />-->
+<!--                    <span>Thanh toán</span>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
 
       <!-- Payment Modal -->
@@ -273,10 +285,45 @@
       </div>
     </div>
   </MainLayout>
+  
+  <!-- Fixed FAB Button -->
+  <div class="fixed-fab-container">
+    <button 
+      class="fixed-fab-button" 
+      @click="toggleFabMenu"
+      :class="{ 'active': showFabMenu }"
+    >
+      <Settings />
+      <span>Thao tác nhanh</span>
+      <ChevronDown class="fixed-fab-chevron" />
+    </button>
+    
+    <div class="fixed-fab-menu" :class="{ 'active': showFabMenu }">
+      <div class="fab-list">
+        <button class="fab-list-item" @click="addPatient">
+          <Users />
+          <span>Thêm bệnh nhân</span>
+        </button>
+        <button class="fab-list-item" @click="addAppointment">
+          <Calendar />
+          <span>Đặt lịch hẹn</span>
+        </button>
+        <button class="fab-list-item" @click="addMedicalRecord">
+          <FileText />
+          <span>Tạo hồ sơ bệnh án</span>
+        </button>
+        <button class="fab-list-item" @click="showPaymentModal = true">
+          <CreditCard />
+          <span>Thanh toán</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import MainLayout from '@/layouts/MainLayout.vue'
 import {
   Users,
@@ -290,16 +337,19 @@ import {
   FileText,
   ChevronDown,
   CreditCard,
-  X
+  X,
+  Settings
 } from 'lucide-vue-next'
 import { dashboardStats, recentPatientsData, todayAppointmentsData, weeklyChartData, monthlyChartData, quarterlyChartData } from '@/data'
 
+const router = useRouter()
 const stats = ref(dashboardStats)
 const recentPatients = ref(recentPatientsData)
 const todayAppointments = ref(todayAppointmentsData)
 const selectedChartPeriod = ref('week')
 const hoveredBar = ref(null)
 const showPaymentModal = ref(false)
+const showFabMenu = ref(false)
 
 const payment = ref({
   patientId: '',
@@ -308,6 +358,29 @@ const payment = ref({
   method: '',
   notes: ''
 })
+
+// FAB Menu Functions
+const toggleFabMenu = () => {
+  showFabMenu.value = !showFabMenu.value
+}
+
+const addPatient = () => {
+  showFabMenu.value = false
+  // Navigate to patients page or show add patient modal
+  router.push('/patients')
+}
+
+const addAppointment = () => {
+  showFabMenu.value = false
+  // Navigate to appointments page or show add appointment modal
+  router.push('/appointments')
+}
+
+const addMedicalRecord = () => {
+  showFabMenu.value = false
+  // Show medical record modal or navigate
+  console.log('Add medical record')
+}
 
 const chartData = computed(() => {
   switch (selectedChartPeriod.value) {
@@ -764,31 +837,325 @@ const processPayment = () => {
   text-align: right;
 }
 
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+/* Fixed FAB Styles */
+.fixed-fab-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 1000;
 }
 
-.quick-action-btn {
+.fixed-fab-button {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--background);
-  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+  border: none;
+  color: white;
   cursor: pointer;
-  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 10;
   font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.quick-action-btn:hover {
-  background-color: var(--primary-color);
+.fixed-fab-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.fixed-fab-button.active {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.fixed-fab-button.active .fixed-fab-chevron {
+  transform: rotate(180deg);
+}
+
+.fixed-fab-button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.fixed-fab-button .fixed-fab-chevron {
+  transition: transform 0.3s ease;
+}
+
+.fixed-fab-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.fixed-fab-menu.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+
+/* FAB List Styles */
+.fab-list {
+  position: absolute;
+  bottom: 60px;
+  left: -12px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.9);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  min-width: 200px;
+}
+
+.fixed-fab-menu.active .fab-list {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.fab-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  text-align: left;
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+}
+
+.fab-list-item:last-child {
+  border-bottom: none;
+}
+
+.fab-list-item:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.fab-list-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.fab-list-item span {
+  font-weight: 500;
+}
+
+/* Placeholder styles */
+.quick-actions-placeholder {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.placeholder-text {
+  font-size: 0.875rem;
+  margin: 0;
+}
+.quick-actions-fab {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.fab-container {
+  position: relative;
+  display: inline-block;
+}
+
+.fab-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 10;
+}
+
+.fab-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.fab-button.active {
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.fab-button svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+}
+
+.fab-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  width: 200px;
+  height: 200px;
+}
+
+.fab-menu.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+.fab-option {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.fab-menu.active .fab-option {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fab-option:hover {
+  background: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.fab-option svg {
+  width: 20px;
+  height: 20px;
+}
+
+.fab-option span {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.fab-option-1 span {
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.fab-option-2 span {
+  top: 50%;
+  right: 60px;
+  transform: translateY(-50%);
+}
+
+.fab-option-3 span {
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.fab-option-4 span {
+  top: 50%;
+  left: 60px;
+  transform: translateY(-50%);
+}
+
+.fab-option:hover span {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Position options in 4 directions */
+.fab-option-1 {
+  top: -70px;
+  left: 0;
+}
+
+.fab-option-2 {
+  top: 0;
+  right: -70px;
+}
+
+.fab-option-3 {
+  bottom: -70px;
+  left: 0;
+}
+
+.fab-option-4 {
+  top: 0;
+  left: -70px;
+}
+
+/* Animation delays for staggered effect */
+.fab-menu.active .fab-option-1 {
+  transition-delay: 0.05s;
+}
+
+.fab-menu.active .fab-option-2 {
+  transition-delay: 0.1s;
+}
+
+.fab-menu.active .fab-option-3 {
+  transition-delay: 0.15s;
+}
+
+.fab-menu.active .fab-option-4 {
+  transition-delay: 0.2s;
 }
 
 @media (max-width: 768px) {
@@ -800,8 +1167,8 @@ const processPayment = () => {
     grid-template-columns: 1fr;
   }
   
-  .quick-actions {
-    grid-template-columns: 1fr;
+  .fab-container {
+    transform: scale(0.9);
   }
 }
 
