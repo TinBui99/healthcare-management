@@ -5,7 +5,7 @@
       <div class="sidebar-header">
         <div class="logo">
           <Heart class="logo-icon" />
-          <span v-if="!sidebarCollapsed" class="logo-text">HealthCare</span>
+          <span v-if="!sidebarCollapsed" class="logo-text">HealthCare demo</span>
         </div>
         <button v-if="!sidebarCollapsed" @click="toggleSidebar" class="sidebar-toggle">
           <Menu />
