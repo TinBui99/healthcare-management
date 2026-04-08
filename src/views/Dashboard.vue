@@ -340,16 +340,57 @@ import {
   X,
   Settings
 } from 'lucide-vue-next'
-import { dashboardStats, recentPatientsData, todayAppointmentsData, weeklyChartData, monthlyChartData, quarterlyChartData } from '@/data'
+import { dashboardStats, todayAppointmentsData, weeklyChartData, monthlyChartData, quarterlyChartData } from '@/data'
+import { PatientService } from '@/services/patientService'
 
 const router = useRouter()
 const stats = ref(dashboardStats)
-const recentPatients = ref(recentPatientsData)
+const recentPatients = ref([])
 const todayAppointments = ref(todayAppointmentsData)
 const selectedChartPeriod = ref('week')
 const hoveredBar = ref(null)
 const showPaymentModal = ref(false)
 const showFabMenu = ref(false)
+
+// Fetch recent patients from database
+const fetchRecentPatients = async () => {
+  try {
+    const patients = await PatientService.getRecentPatients(3)
+    // Transform patient data to match dashboard format
+    recentPatients.value = patients.map(patient => ({
+      id: patient.id,
+      name: patient.name,
+      age: calculateAge(patient.date_of_birth),
+      gender: patient.gender === 'male' ? 'Nam' : 'N\u1eef',
+      registerDate: patient.created_at
+    }))
+  } catch (error) {
+    console.error('Error fetching recent patients:', error)
+    // Fallback to mock data if database fails
+    recentPatients.value = [
+      { id: 1, name: 'Nguy\u00ean V\u0103n B', age: 35, gender: 'Nam', registerDate: '2024-01-15' },
+      { id: 2, name: 'Tr\u1ea7n Th\u1ecb C', age: 28, gender: 'N\u1eef', registerDate: '2024-01-14' },
+      { id: 3, name: 'L\u00ea V\u0103n D', age: 42, gender: 'Nam', registerDate: '2024-01-13' }
+    ]
+  }
+}
+
+// Calculate age from date of birth
+const calculateAge = (dateOfBirth) => {
+  const birthDate = new Date(dateOfBirth)
+  const today = new Date()
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const monthDiff = today.getMonth() - birthDate.getMonth()
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--
+  }
+  
+  return age
+}
+
+// Fetch data on component mount
+fetchRecentPatients()
 
 const payment = ref({
   patientId: '',

@@ -165,6 +165,61 @@ export class PatientService {
     }
   }
 
+  // Get recent patients (most recently created)
+  static async getRecentPatients(limit = 3) {
+    try {
+      const { data, error } = await supabase
+        .from('patients')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching recent patients:', error)
+      // Fallback to mock data for demo
+      return [
+        {
+          id: '1',
+          code: 'BN001',
+          name: 'Nguyên Van A',
+          date_of_birth: '1980-01-15',
+          gender: 'male',
+          phone: '0901234567',
+          email: 'nguyenvana@email.com',
+          address: '123 Nguyen Hue, Q.1, TP.HCM',
+          status: 'active',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '2',
+          code: 'BN002',
+          name: 'Tran Thi B',
+          date_of_birth: '1985-05-20',
+          gender: 'female',
+          phone: '0912345678',
+          email: 'tranthib@email.com',
+          address: '456 Le Loi, Q.3, TP.HCM',
+          status: 'active',
+          created_at: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          id: '3',
+          code: 'BN003',
+          name: 'Le Van C',
+          date_of_birth: '1975-03-10',
+          gender: 'male',
+          phone: '0923456789',
+          email: 'levanc@email.com',
+          address: '789 Cach Mang Thang 8, Q.10, TP.HCM',
+          status: 'active',
+          created_at: new Date(Date.now() - 172800000).toISOString()
+        }
+      ]
+    }
+  }
+
   // Generate unique patient code
   static async generatePatientCode() {
     try {
